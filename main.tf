@@ -113,7 +113,7 @@ resource "aws_instance" "tf-instance" {
     tags {
         Name = "proxy-001"
     }
-    depends_on = ["aws_internet_gateway.eu-central-1"]
+    depends_on = ["aws_internet_gateway.tf-igw"]
 }
 
 output "eu-central-1 public IPv4" {
