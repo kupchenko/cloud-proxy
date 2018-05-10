@@ -1,16 +1,16 @@
 variable aws_profile {
-  type = "string"
-  default = "default"
+    type = "string"
+    default = "default"
 }
 
 variable aws_region {
-  type = "string"
-  default = "us-west-1"
+    type = "string"
+    default = "us-west-1"
 }
 
 variable aws_ami {
-  type = "string"
-  default = "ami-97785bed"
+    type = "string"
+    default = "ami-97785bed"
 }
 
 provider "aws" {
@@ -37,7 +37,7 @@ resource "aws_subnet" "tf-subnet" {
     provider = "aws.default"
     vpc_id = "${aws_vpc.tf-vpc.id}"
     cidr_block = "${cidrsubnet(aws_vpc.tf-vpc.cidr_block, 4, 1)}"
-    map_public_ip_on_launch = true
+    map_public_ip_on_launch = false
     ipv6_cidr_block = "${cidrsubnet(aws_vpc.tf-vpc.ipv6_cidr_block, 8, 1)}"
     assign_ipv6_address_on_creation = true
 }
@@ -64,7 +64,7 @@ resource "aws_default_route_table" "tf-rt" {
 
 resource "aws_route_table_association" "tf-rt-a" {
     provider = "aws.default"
-    subnet_id      = "${aws_subnet.tf-subnet.id}"
+    subnet_id = "${aws_subnet.tf-subnet.id}"
     route_table_id = "${aws_default_route_table.tf-rt.id}"
 }
 
@@ -110,16 +110,26 @@ resource "aws_instance" "tf-instance" {
     subnet_id = "${aws_subnet.tf-subnet.id}"
     ipv6_address_count = 1
     vpc_security_group_ids = ["${aws_security_group.tf-sg.id}"]
+    root_block_device {
+        delete_on_termination = true
+    }
     tags {
         Name = "proxy-001"
     }
     depends_on = ["aws_internet_gateway.tf-igw"]
 }
 
-output "eu-central-1 public IPv4" {
-  value = "${aws_instance.tf-instance.public_ip}"
+resource "aws_eip" "tf-eip" {
+    provider = "aws.default"
+    instance = "${aws_instance.tf-instance.id}"
+    vpc = true
+    depends_on = ["aws_internet_gateway.tf-igw"]
 }
 
-output "eu-central-1 IPv6" {
-  value = ["${aws_instance.tf-instance.ipv6_addresses}"]
+output "IPv4 address" {
+    value = "${aws_eip.tf-eip.public_ip}"
+}
+
+output "IPv6 address" {
+    value = ["${aws_instance.tf-instance.ipv6_addresses}"]
 }
