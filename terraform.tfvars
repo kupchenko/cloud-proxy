@@ -1,3 +1,3 @@
 aws_profile = "kupchenko"
-aws_region = "eu-west-2"
-aws_ami = "ami-4f02e328"
+aws_region = "us-west-2"
+aws_ami = "ami-0ebdd976"
