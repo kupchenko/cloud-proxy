@@ -1,0 +1,11 @@
+version: '3'
+services:
+  3proxy:
+    image: "oukooveu/3proxy"
+    ports:
+     - "8080:8080"
+     - "7034:7034"
+     - "7035:7035"
+    volumes:
+     - ./3proxy.cfg:/etc/3proxy/3proxy.cfg:ro
+     - ./logs:/var/log/3proxy:rw
