@@ -1,0 +1,4 @@
+#!/bin/bash
+docker login
+docker build -t oukooveu/3proxy:latest .
+docker push oukooveu/3proxy:latest
